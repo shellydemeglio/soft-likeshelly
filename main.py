@@ -23,6 +23,44 @@ class Deck(db.Model):
     def __repr__(self):
         return f'<Deck {self.name}>'
 
+# Import necessary modules
+from flask import Flask, render_template, request, redirect, url_for, session
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# Initialize Flask app
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcard_app.db'
+db = SQLAlchemy(app)
+
+# Define Deck model
+class Deck(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+# Define routes for deck management
+@app.route('/decks')
+def list_decks():
+    decks = Deck.query.all()
+    return render_template('decks.html', decks=decks)
+
+@app.route('/decks/create', methods=['GET', 'POST'])
+def create_deck():
+    if request.method == 'POST':
+        name = request.form['name']
+        new_deck = Deck(name=name)
+        db.session.add(new_deck)
+        db.session.commit()
+        return redirect(url_for('list_decks'))
+    return render_template('create_deck.html')
+
+@app.route('/decks/<int:deck_id>/delete', methods=['POST'])
+def delete_deck(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    db.session.delete(deck)
+    db.session.commit()
+    return redirect(url_for('list_decks'))
 
 @app.route('/')
 def index():
