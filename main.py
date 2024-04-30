@@ -11,6 +11,18 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    
+class Deck(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Define a relationship with the User model
+    user = db.relationship('User', backref=db.backref('decks', lazy=True))
+
+    def __repr__(self):
+        return f'<Deck {self.name}>'
+
 
 @app.route('/')
 def index():
@@ -53,9 +65,29 @@ def dashboard():
 @app.route('/create_flashcard', methods=['GET', 'POST'])
 def create_flashcard():
     if request.method == 'POST':
-        # Logic for creating a new flashcard
+        question = request.form.get('question')
+        answer = request.form.get('answer')
+        deck_id = request.form.get('deck_id')
+        
+        # Check if the deck_id is provided and valid
+        if deck_id:
+            deck = Deck.query.get(deck_id)
+            if deck:
+                # Create a new flashcard associated with the selected deck
+                flashcard = Flashcard(question=question, answer=answer, deck_id=deck_id)
+                db.session.add(flashcard)
+                db.session.commit()
+                return 'Flashcard created successfully'
+
+        # If deck_id is not provided or invalid, create a flashcard without association to a deck
+        flashcard = Flashcard(question=question, answer=answer)
+        db.session.add(flashcard)
+        db.session.commit()
         return 'Flashcard created successfully'
-    return render_template('create_flashcard.html')
+
+    # If the request method is GET, render the template with a list of decks
+    decks = Deck.query.all()
+    return render_template('create_flashcard.html', decks=decks)
 
 if __name__ == '__main__':
     db.create_all()
