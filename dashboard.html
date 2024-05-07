@@ -6,8 +6,13 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <h1>Welcome to the Dashboard</h1>
-    <p>You are logged in as {{ session['username'] }}</p>
-    <p><a href="{{ url_for('logout') }}">Logout</a></p>
+    <h1>Welcome to your Dashboard, {{ user.username }}!</h1>
+    
+    <h2>Progress Tracking</h2>
+    <p>Quiz Scores: {{ progress_data.quiz_scores }}</p>
+    <p>Completion Rate: {{ progress_data.completion_rate }}</p>
+    <!-- Add more progress tracking information here as needed -->
+
+    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
