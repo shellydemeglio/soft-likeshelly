@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_SQLAlchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import render_template, session
+from models import User, ProgressData  
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -56,6 +58,21 @@ def create_flashcard():
         # Logic for creating a new flashcard
         return 'Flashcard created successfully'
     return render_template('create_flashcard.html')
+
+
+@app.route('/dashboard')
+def dashboard():
+    if 'username' in session:
+        # Get the current user
+        username = session['username']
+        user = User.query.filter_by(username=username).first()
+
+        # Query progress data for the user
+        progress_data = ProgressData.query.filter_by(user_id=user.id).first()
+
+        return render_template('dashboard.html', user=user, progress_data=progress_data)
+    return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     db.create_all()
