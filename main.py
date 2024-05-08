@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_SQLAlchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import render_template, session
+
 from models import User, ProgressData 
-from flask import Flask, render_template, session
 from spaced_repetition import get_flashcard_to_study
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
