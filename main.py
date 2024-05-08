@@ -7,7 +7,7 @@ from spaced_repetition import get_flashcard_to_study
 
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'quiz_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcard_app.db'
 db = SQLAlchemy(app)
 
@@ -44,7 +44,7 @@ def login():
     return render_template('login.html')
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'quiz_key'
 
 @app.route('/quiz')
 def quiz():
